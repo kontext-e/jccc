@@ -1,0 +1,66 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="visibility:Default">
+        <includeConcept refId="visibility:PublicMethods"/>
+        <includeConcept refId="visibility:ProtectedMethods"/>
+        <includeConcept refId="visibility:PrivateMethods"/>
+        <includeConcept refId="visibility:PackageProtectedMethods"/>
+    </group>
+
+    <concept id="visibility:PublicMethods">
+        <description>Marks all public methods with label Public</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.visibility='public'
+            SET
+                m:Public
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="visibility:ProtectedMethods">
+        <description>Marks all protected methods with label Protected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.visibility='protected'
+            SET
+                m:Protected
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="visibility:PrivateMethods">
+        <description>Marks all private methods with label Private</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.visibility='private'
+            SET
+                m:Private
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="visibility:PackageProtectedMethods">
+        <description>Marks all private methods with label PackageProtected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.visibility='default'
+            SET
+                m:PackageProtected
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+</jqa:jqassistant-rules>

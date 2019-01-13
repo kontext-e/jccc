@@ -1,0 +1,108 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'signing'
+}
+
+group 'de.kontext-e.jqassistant.plugin'
+version '1.0.0-SNAPSHOT'
+project.ext["jqaversion"] = "1.7.0-SNAPSHOT"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    testCompile("com.buschmais.jqassistant.core:store:${project.jqaversion}")
+    testCompile("com.buschmais.jqassistant.core:plugin:${project.jqaversion}")
+    testCompile("com.buschmais.jqassistant.plugin:common:${project.jqaversion}")
+    testCompile("com.buschmais.jqassistant.plugin:java:${project.jqaversion}")
+    testCompile("com.buschmais.jqassistant.neo4jserver:neo4jv3:${project.jqaversion}")
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+
+    archives javadocJar
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.groupId = 'de.kontext-e.jqassistant.plugin'
+    }
+}
+
+if(this.hasProperty('signing.keyId')) {
+    signing {
+        sign configurations.archives
+    }
+}
+
+if(this.hasProperty('sonatypeUsername')) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                if(this.getProperty("version").contains("SNAPSHOT")) {
+                    // snapshots
+                    repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                        authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    }
+                } else {
+                    // releases
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    }
+                }
+
+                pom.project {
+                    name 'jccc'
+                    packaging 'jar'
+                    description 'Java Concepts and Constraints Compilation'
+                    url 'https://github.com/kontext-e/jccc'
+
+                    scm {
+                        url 'scm:git@github.com:kontext-e/jccc.git'
+                        connection 'scm:git@github.com:kontext-e/jccc.git'
+                        developerConnection 'scm:git@github.com:kontext-e/jccc.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'GNU General Public License, v3'
+                            url 'http://www.gnu.org/licenses/gpl-3.0.html'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'jens-nerche'
+                            name 'Jens Nerche'
+                            email 'j.nerche@kontext-e.de'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

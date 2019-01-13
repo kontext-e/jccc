@@ -1,0 +1,40 @@
+= Java Concepts and Constrains Compilation
+
+This is a compilation of Concepts and Constraints for jQAssistants
+Java plugin.
+
+== Usage
+
+=== Configure a jQAssistant dependency
+
+==== Maven
+
+Insert into jQAssistant plugin configuration a new dependency:
+
+        <dependencies>
+            <dependency>
+                <groupId>de.kontext-e.jqassistant.plugin</groupId>
+                <artifactId>jqassistant.plugin.jccc</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+
+==== Gradle
+
+Assuming the project is configured the way described in
+http://techblog.kontext-e.de/jqassistant-with-gradle[the blog post about
+using jQAssistant with Gradle],
+add a new dependency:
+
+    jqa("de.kontext-e.jqassistant.plugin:jqassistant.plugin.jccc:1.0.0-SNAPSHOT")
+
+=== Add the jccc group in jQAssistant rules
+
+==== Asciidoc
+
+    includesGroups="jccc:Default"
+
+==== XML
+
+    <includeGroup refId="jccc:Default"/>
+
