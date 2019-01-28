@@ -1,0 +1,64 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="jccc.coupling:Default">
+        <includeConcept refId="jccc.coupling:TypeCoupling"/>
+    </group>
+
+    <concept id="jccc.coupling:TypeFanIn">
+        <description>Add a property 'fanIn' to a Type with the number of other types depending on them.</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type:File)
+            WHERE
+                exists(t.byteCodeVersion)
+            WITH
+                t
+            OPTIONAL MATCH
+                (t)<-[:DEPENDS_ON]-(dependent:Type)
+            WITH
+                t, COUNT(dependent) as Dependents
+            SET
+                t.fanIn = Dependents
+            RETURN
+                t.fqn as Type
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.coupling:TypeFanOut">
+        <description>Add a property 'fanOut' to a Type with the number of other types they depend on.</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type:File)
+            WHERE
+                exists(t.byteCodeVersion)
+            WITH
+                t
+            OPTIONAL MATCH
+                (t)-[:DEPENDS_ON]->(dependent:Type)
+            WITH
+                t, COUNT(dependent) as Dependents
+            SET
+                t.fanOut = Dependents
+            RETURN
+                t.fqn as Type
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.coupling:TypeCoupling">
+        <requiresConcept refId="jccc.coupling:TypeFanIn" />
+        <requiresConcept refId="jccc.coupling:TypeFanOut" />
+        <description>Add a property 'typeCoupling' to a Type as sum of fanIn and fanOut.</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type:File)
+            WHERE
+                exists(t.byteCodeVersion)
+            SET
+                t.typeCoupling = t.fanIn + t.fanOut
+            RETURN
+                t.fqn as Type
+        ]]></cypher>
+    </concept>
+
+
+</jqa:jqassistant-rules>

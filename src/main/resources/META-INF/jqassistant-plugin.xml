@@ -2,6 +2,7 @@
     <description>Java Common Concepts and Constraints Compilation</description>
     <rules>
         <resource>visibility.xml</resource>
+        <resource>coupling.xml</resource>
         <resource>jccc.xml</resource>
     </rules>
 </jqa-plugin:jqassistant-plugin>
