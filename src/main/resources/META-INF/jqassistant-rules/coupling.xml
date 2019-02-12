@@ -2,6 +2,7 @@
 
     <group id="jccc.coupling:Default">
         <includeConcept refId="jccc.coupling:TypeCoupling"/>
+        <includeConcept refId="jccc.coupling:UsedFromDifferentPackage"/>
     </group>
 
     <concept id="jccc.coupling:TypeFanIn">
@@ -60,5 +61,22 @@
         ]]></cypher>
     </concept>
 
+
+    <concept id="jccc.coupling:UsedFromDifferentPackage">
+        <requiresConcept refId="jccc.visibility:PublicMethods" />
+        <description>Put a label ‘UsedFromDifferentPackage’ on methods which are called from a different package.</description>
+        <cypher><![CDATA[
+            MATCH
+                (t1:Type)-[:DECLARES]->(m:Method),
+                (t2:Type)-[:DECLARES]->(p:Method:Public),
+                (package1:Package)-[:CONTAINS]->(t1),
+                (package2:Package)-[:CONTAINS]->(t2),
+                (m)-[:INVOKES]->(p)
+            WHERE
+                package1.fqn <> package2.fqn
+            SET
+                p:UsedFromDifferentPackage
+        ]]></cypher>
+    </concept>
 
 </jqa:jqassistant-rules>

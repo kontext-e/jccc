@@ -1,0 +1,20 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="jccc.main:Default">
+        <includeConcept refId="jccc.main:MainTypes"/>
+    </group>
+
+    <concept id="jccc.main:MainTypes">
+        <description>Marks all types in main directories with label Main</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Artifact)-[:CONTAINS]->(t:Java:Type)
+            WHERE
+                a.fileName CONTAINS "/java/main"
+            SET
+                t:Main
+            RETURN
+                count(t.fqn)
+        ]]></cypher>
+    </concept>
+</jqa:jqassistant-rules>

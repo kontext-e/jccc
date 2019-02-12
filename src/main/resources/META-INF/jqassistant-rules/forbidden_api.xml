@@ -1,0 +1,18 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <constraint id="jccc.deprecated-api:ConstructorOfDateMustNotBeUsed">
+        <description>Constructors of java.util.Date must not be used. Use Java 8 Date and Time API instead.</description>
+        <cypher><![CDATA[
+            MATCH
+                (dateType:Type)-[:DECLARES]->(forbiddenMethod:Method),
+                (type:Type)-[:DECLARES]->(method:Method)-[:INVOKES]->(forbiddenMethod)
+            WHERE
+                (dateType.fqn = 'java.util.Date' OR dateType.fqn = 'java.sql.Date')
+            AND
+                forbiddenMethod:Constructor
+            RETURN
+                method AS Method, type as Caller
+        ]]></cypher>
+    </constraint>
+
+</jqa:jqassistant-rules>

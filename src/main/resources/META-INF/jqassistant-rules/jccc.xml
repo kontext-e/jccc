@@ -2,6 +2,7 @@
 
     <group id="jccc:Default">
         <includeGroup refId="jccc.visibility:Default"/>
+        <includeGroup refId="jccc.main:Default"/>
         <includeGroup refId="jccc.coupling:Default"/>
     </group>
 
