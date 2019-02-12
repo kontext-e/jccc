@@ -5,6 +5,10 @@
         <includeConcept refId="jccc.visibility:ProtectedMethods"/>
         <includeConcept refId="jccc.visibility:PrivateMethods"/>
         <includeConcept refId="jccc.visibility:PackageProtectedMethods"/>
+        <includeConcept refId="jccc.visibility:PublicTypes"/>
+        <includeConcept refId="jccc.visibility:ProtectedTypes"/>
+        <includeConcept refId="jccc.visibility:PrivateTypes"/>
+        <includeConcept refId="jccc.visibility:PackageProtectedTypes"/>
     </group>
 
     <concept id="jccc.visibility:PublicMethods">
@@ -50,7 +54,7 @@
     </concept>
 
     <concept id="jccc.visibility:PackageProtectedMethods">
-        <description>Marks all private methods with label PackageProtected</description>
+        <description>Marks all package protected methods with label PackageProtected</description>
         <cypher><![CDATA[
             MATCH
                 (m:Method)
@@ -62,5 +66,62 @@
                 m.name
         ]]></cypher>
     </concept>
+
+    <concept id="jccc.visibility:PublicTypes">
+        <description>Marks all public types with label Public</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.visibility='public'
+            SET
+                m:Public
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.visibility:PackageProtectedTypes">
+        <description>Marks all package protected types with label PackageProtected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.visibility='default'
+            SET
+                m:PackageProtected
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.visibility:ProtectedTypes">
+        <description>Marks all protected types with label Protected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.visibility='protected'
+            SET
+                m:Protected
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.visibility:PrivateTypes">
+        <description>Marks all private types with label Private</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.visibility='private'
+            SET
+                m:Private
+            RETURN
+                m.name
+        ]]></cypher>
+    </concept>
+
 
 </jqa:jqassistant-rules>
