@@ -76,6 +76,8 @@
                 package1.fqn <> package2.fqn
             SET
                 p:UsedFromDifferentPackage
+            RETURN
+                count(p)
         ]]></cypher>
     </concept>
 
