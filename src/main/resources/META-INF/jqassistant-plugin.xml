@@ -4,6 +4,7 @@
         <resource>visibility.xml</resource>
         <resource>coupling.xml</resource>
         <resource>main.xml</resource>
+        <resource>package.xml</resource>
         <resource>jccc.xml</resource>
     </rules>
 </jqa-plugin:jqassistant-plugin>
