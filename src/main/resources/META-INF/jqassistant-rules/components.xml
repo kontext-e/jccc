@@ -1,0 +1,141 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="jccc.components:Default">
+        <includeConcept refId="jccc.components:*"/>
+        <includeConstraint refId="jccc.components:*"/>
+    </group>
+
+    <concept id="jccc.components:CreateArchitectureModelFromAsciidoc">
+        <description>Create Architecture Model from Asciidoc.</description>
+        <cypher><![CDATA[
+            MATCH
+                (attribute:Asciidoc:Attribute)<--(a:Asciidoc:Table)-[:HAS_ROW]->(body)
+            WHERE
+                attribute.name="architecture" and attribute.value="components"
+            WITH
+                body
+            MATCH
+                (body)-[:CONTAINS_CELL]->(name:Asciidoc:Cell {colnumber: 0}),
+                (body)-[:CONTAINS_CELL]->(location:Asciidoc:Cell {colnumber: 1}),
+                (body)-[:CONTAINS_CELL]->(purpose:Asciidoc:Cell {colnumber: 2})
+            MERGE
+                (name)-[:MAPS_TO_CODE]->(location)
+            CREATE
+                (component:Architecture:Component:C4:Documented {name: name.text, location: location.text, description: purpose.text})
+            MERGE
+                (name)-[:CREATES]->(component)
+            RETURN
+                component.name, component.location, component.description
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.components:linkComponentToCode">
+        <requiresConcept refId="jccc.components:CreateArchitectureModelFromAsciidoc" />
+        <description>Create relationships between documented components and Java Packages in code.</description>
+        <cypher><![CDATA[
+            MATCH
+                (c4:C4), (p:Java:Package)
+            WHERE
+                c4.location = p.fqn
+            MERGE
+                (c4)-[:CONTAINS]->(p)
+            RETURN
+                p.fqn;
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.components:linkTablesToDiagram">
+        <description>Create relationships between Asciidoc tables and UML diagrams.</description>
+        <cypher><![CDATA[
+            MATCH
+                (attribute:Asciidoc:Attribute)<--(a:Asciidoc:Table)
+            WHERE
+                attribute.name="for"
+            WITH
+                a, attribute
+            MATCH
+                (p:PlantUml:Diagram)
+            WHERE
+                p.title = attribute.value
+            MERGE
+                (a)-[:DESCRIBES]->(p)
+            RETURN
+                count(a)
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.components:linkTableRowsToDiagramComponents">
+        <requiresConcept refId="jccc.components:linkTablesToDiagram" />
+        <description>Create relationships between diagram components and describing tables rows.</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Asciidoc:Table)-[:DESCRIBES]->(p:PlantUml:Diagram),
+                (a)-[:HAS_ROW]->(body),
+                (body)-[:CONTAINS_CELL]->(name:Asciidoc:Cell {colnumber: 0}),
+                (p:PlantUml:Diagram)-->(leaf:Leaf)
+            WHERE
+                toLower(leaf.fullName) = toLower(name.text)
+            MERGE
+                (body)-[:DESCRIBES]->(leaf)
+            RETURN
+                leaf.fullName
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.components:linkComponentToDiagrams">
+        <requiresConcept refId="jccc.components:CreateArchitectureModelFromAsciidoc" />
+        <requiresConcept refId="jccc.components:linkTableRowsToDiagramComponents" />
+        <description>Create relationships between C4 components and components described in diagrams.</description>
+        <cypher><![CDATA[
+            MATCH
+                (body)-[:DESCRIBES]->(leaf:Leaf),
+                (body)-[:CONTAINS_CELL]->(name:Asciidoc:Cell {colnumber: 0}),
+                (name:Asciidoc:Cell)-[:CREATES]->(component:Architecture:Component:C4)
+            WHERE
+                toLower(leaf.fullName) = toLower(component.name)
+            MERGE
+                (leaf)-[:DESCRIBES]->(component)
+            SET
+                leaf:DiagramComponent
+            RETURN
+                leaf.fullName, component.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.components:connectC4Components">
+        <requiresConcept refId="jccc.components:linkComponentToDiagrams" />
+        <description>Create DEPENDS_ON relationships between C4 Component nodes.</description>
+        <cypher><![CDATA[
+            MATCH
+                (leaf1:DiagramComponent)-[:DESCRIBES]->(component1:Architecture:Component:C4),
+                (leaf2:DiagramComponent)-[:DESCRIBES]->(component2:Architecture:Component:C4),
+                (leaf1)-[:LINK_TO]->(leaf2)
+            MERGE
+                (component1)-[:DEPENDS_ON]->(component2)
+            RETURN
+                component1.name + " depends on " + component2.name
+        ]]></cypher>
+    </concept>
+
+    <constraint id="jccc.components:checkDependencies">
+        <requiresConcept refId="jccc.package:TransitivePackageDependencies" />
+        <requiresConcept refId="jccc.main:MainPackages" />
+        <requiresConcept refId="jccc.components:connectC4Components" />
+        <requiresConcept refId="jccc.components:linkComponentToCode" />
+        <description>Check whether documented dependencies and Java Package dependencies match.</description>
+        <cypher><![CDATA[
+            MATCH
+                (component1:Architecture:Component:C4)-[:DEPENDS_ON]->(component2:Architecture:Component:C4),
+                (component1)-[:CONTAINS]->(p1:Java:Package),
+                (component2)-[:CONTAINS]->(p2:Java:Package),
+                (p2)-[:DEPENDS_ON]->(p1)
+            WHERE
+                p1:Main
+            AND
+                p2:Main
+            RETURN
+                p1.fqn + " MUST NOT depend on " + p2.fqn as WrongDependencies
+        ]]></cypher>
+    </constraint>
+
+</jqa:jqassistant-rules>

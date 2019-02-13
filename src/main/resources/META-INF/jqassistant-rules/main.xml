@@ -1,8 +1,7 @@
 <jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
 
     <group id="jccc.main:Default">
-        <includeConcept refId="jccc.main:MainTypes"/>
-        <includeConcept refId="jccc.main:Immutable"/>
+        <includeConcept refId="jccc.main:*"/>
     </group>
 
     <concept id="jccc.main:MainTypes">
@@ -16,6 +15,20 @@
                 t:Main
             RETURN
                 count(t.fqn)
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.main:MainPackages">
+        <description>Marks all packages in main directories with label Main</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Artifact)-[:CONTAINS]->(p:Java:Package)
+            WHERE
+                a.fileName CONTAINS '/java/main'
+            SET
+                p:Main
+            RETURN
+                p.fqn
         ]]></cypher>
     </concept>
 

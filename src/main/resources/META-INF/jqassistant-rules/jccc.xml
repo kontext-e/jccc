@@ -5,6 +5,7 @@
         <includeGroup refId="jccc.main:Default"/>
         <includeGroup refId="jccc.coupling:Default"/>
         <includeGroup refId="jccc.package:Default"/>
+        <includeGroup refId="jccc.components:Default"/>
     </group>
 
 </jqa:jqassistant-rules>
