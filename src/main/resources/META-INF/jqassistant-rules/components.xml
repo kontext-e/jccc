@@ -134,7 +134,42 @@
             AND
                 p2:Main
             RETURN
-                p1.fqn + " MUST NOT depend on " + p2.fqn as WrongDependencies
+                distinct p1.fqn + " MUST NOT depend on " + p2.fqn as WrongDependencies
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jccc.components:missingDependencies">
+        <requiresConcept refId="jccc.package:TransitivePackageDependencies" />
+        <requiresConcept refId="jccc.main:MainPackages" />
+        <requiresConcept refId="jccc.components:connectC4Components" />
+        <requiresConcept refId="jccc.components:linkComponentToCode" />
+        <description>Check dependencies that are in Model but not in Code.</description>
+        <cypher><![CDATA[
+            MATCH
+                (component1:Architecture:Component:C4)-[:DEPENDS_ON]->(component2:Architecture:Component:C4),
+                (component1)-[:CONTAINS]->(p1:Java:Package),
+                (component2)-[:CONTAINS]->(p2:Java:Package)
+            WHERE
+                p1:Main
+            AND
+                p2:Main
+            AND
+                not( (p1)-[:DEPENDS_ON]->(p2) )
+            RETURN
+                distinct p1.fqn + " SHOULD depend on " + p2.fqn as MissingDependencies
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jccc.components:missingComponentDescriptions" severity="info">
+        <requiresConcept refId="jccc.components:linkComponentToDiagrams" />
+        <description>Check Components that are in diagram but not described in Asciidoc.</description>
+        <cypher><![CDATA[
+            MATCH
+                (p:PlantUml:Diagram)-->(leaf:Leaf)
+            WHERE
+                not (leaf:DiagramComponent)
+            RETURN
+                p, leaf.fullName
         ]]></cypher>
     </constraint>
 
