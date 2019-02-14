@@ -118,7 +118,8 @@
     </concept>
 
     <constraint id="jccc.components:checkDependencies">
-        <requiresConcept refId="jccc.package:TransitivePackageDependencies" />
+        <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromOtherToChild" />
+        <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromChildToOther" />
         <requiresConcept refId="jccc.main:MainPackages" />
         <requiresConcept refId="jccc.components:connectC4Components" />
         <requiresConcept refId="jccc.components:linkComponentToCode" />
@@ -139,7 +140,8 @@
     </constraint>
 
     <constraint id="jccc.components:missingDependencies">
-        <requiresConcept refId="jccc.package:TransitivePackageDependencies" />
+        <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromOtherToChild" />
+        <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromChildToOther" />
         <requiresConcept refId="jccc.main:MainPackages" />
         <requiresConcept refId="jccc.components:connectC4Components" />
         <requiresConcept refId="jccc.components:linkComponentToCode" />

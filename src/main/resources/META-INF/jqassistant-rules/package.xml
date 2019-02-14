@@ -1,10 +1,10 @@
 <jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
 
     <group id="jccc.package:Default">
-        <includeConcept refId="jccc.package:TransitivePackageDependencies"/>
+        <includeConcept refId="jccc.package:*"/>
     </group>
 
-    <concept id="jccc.coupling:PackageLevel">
+    <concept id="jccc.package:PackageLevel">
         <requiresConcept refId="dependency:Package" />
         <description>Set the level property of a package, e.g. 1 for de, 2 for de.kontext_e and so on.</description>
         <cypher><![CDATA[
@@ -19,20 +19,60 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.package:TransitivePackageDependencies">
-        <requiresConcept refId="jccc.coupling:PackageLevel" />
+    <concept id="jccc.package:TransitivePackageDependenciesFromOtherToChild">
+        <requiresConcept refId="jccc.package:PackageLevel" />
         <description>Add a DEPENDS_ON relationship to parents of a package P from other packages up to the same level of the source package.</description>
         <cypher><![CDATA[
             MATCH
-                (p:Java:Package)-[:DEPENDS_ON]->(p2:Java:Package),
-                (parent:Java:Package)-[:CONTAINS*]->(p2:Java:Package)
+                (other:Java:Package)-[r:DEPENDS_ON]->(child:Java:Package),
+                (parent:Java:Package)-[:CONTAINS*]->(child:Java:Package)
             WHERE
-                p.level <= parent.level
-            CREATE UNIQUE
-                (p)-[:DEPENDS_ON]->(parent)
+                other.level <= parent.level
+			AND
+            	parent <> other
+            AND
+            	not exists(r.resolved)
+            MERGE
+                (other)-[d:DEPENDS_ON]->(parent)
+            SET
+                d.resolved=true
             RETURN
-                p.fqn, parent.fqn
+                distinct other.fqn, parent.fqn
         ]]></cypher>
     </concept>
+
+    <concept id="jccc.package:TransitivePackageDependenciesFromChildToOther">
+        <requiresConcept refId="jccc.package:PackageLevel" />
+        <description>Add a DEPENDS_ON relationship to parents of a package P that depends on other package to the other package up to the same level of the source package.</description>
+        <cypher><![CDATA[
+            MATCH
+                (parent:Java:Package)-[:CONTAINS*]->(child:Java:Package)-[r:DEPENDS_ON]->(other:Java:Package)
+            WHERE
+                parent.level >= other.level
+			AND
+            	parent <> other
+            AND
+            	not exists(r.resolved)
+            MERGE
+                (parent)-[d:DEPENDS_ON]->(other)
+            SET
+                d.resolved=true
+            RETURN
+                distinct parent.fqn, other.fqn
+        ]]></cypher>
+    </concept>
+
+    <!--
+    check cyclic dependencies again after resolving transitive package dependencies
+    MATCH
+    (p1:Package)-[:DEPENDS_ON]->(p2:Package),
+    path=shortestPath((p2)-[:DEPENDS_ON*]->(p1))
+WHERE
+    p1<>p2
+RETURN
+    p1 AS Package, EXTRACT(p IN nodes(path) | p.fqn) AS Cycle
+ORDER BY
+    Package.fqn
+    -->
 
 </jqa:jqassistant-rules>
