@@ -1,0 +1,39 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="jccc.asciidoc:Default">
+        <includeConcept refId="jccc.asciidoc:*"/>
+        <includeConstraint refId="jccc.asciidoc:*"/>
+    </group>
+
+    <concept id="jccc.asciidoc:TechnicalDebt" severity="info">
+        <description>Creates a relationship between two Packages for Technical Debt.</description>
+        <cypher><![CDATA[
+            MATCH
+                (table:Asciidoc:Table)-->(attribute1:Asciidoc:Attribute),
+                (table)-->(attribute2:Asciidoc:Attribute),
+                (table)-[:HAS_ROW]->(body)
+            WHERE
+                attribute1.name="architecture" AND attribute1.value="technical_debt"
+            AND
+                attribute2.name="diagram_type" AND attribute2.value="package"
+            WITH
+                body
+            MATCH
+                (body)-[:CONTAINS_CELL]->(fromCell:Asciidoc:Cell {colnumber: 0}),
+                (body)-[:CONTAINS_CELL]->(toCell:Asciidoc:Cell {colnumber: 1})
+            WITH
+                fromCell, toCell
+            MATCH
+                (jp1:Java:Package), (jp2:Java:Package)
+            WHERE
+                jp1.fqn = fromCell.text
+            AND
+                jp2.fqn = toCell.text
+            MERGE
+                (jp1)-[:TECHNICAL_DEBT]->(jp2)
+            RETURN
+                jp1.fqn, jp2.fqn
+        ]]></cypher>
+    </concept>
+
+</jqa:jqassistant-rules>
