@@ -74,7 +74,7 @@
                 (body)-[:CONTAINS_CELL]->(name:Asciidoc:Cell {colnumber: 0}),
                 (p:PlantUml:Diagram)-->(leaf:Leaf)
             WHERE
-                toLower(leaf.fullName) = toLower(name.text)
+                toLower(leaf.fullName) = replace(toLower(name.text)," ","_")
             MERGE
                 (body)-[:DESCRIBES]->(leaf)
             RETURN
