@@ -36,4 +36,79 @@
         ]]></cypher>
     </concept>
 
+    <concept id="jccc.asciidoc:PMD" severity="info">
+        <description>Enrich Asciidoc cells for PMD constraints.</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Asciidoc:Table)-[:HAS_ROW]->(body),
+                (a)-[:HAS_ATTRIBUTE]->(att:Asciidoc:Attribute)
+            WHERE
+                att.name='metric' AND toLower(att.value) = 'pmd'
+            WITH
+                body
+            MATCH
+                (body)-[:CONTAINS_CELL]->(prioCell:Asciidoc:Cell {colnumber: 0}),
+                (body)-[:CONTAINS_CELL]->(thresholdCell:Asciidoc:Cell {colnumber: 1})
+            SET
+                prioCell:Pmd:Priority:Metric,
+                thresholdCell:Pmd:Threshold:Metric,
+                prioCell.priority = toInt(prioCell.text),
+                thresholdCell.threshold = toInt(thresholdCell.text)
+            CREATE UNIQUE
+                (prioCell)-[:HAS_UPPER_THRESHOLD]->(thresholdCell)
+            RETURN
+                prioCell, thresholdCell
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.asciidoc:Checkstyle" severity="info">
+        <description>Enrich Asciidoc cells for Checkstyle constraints.</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Asciidoc:Table)-[:HAS_ROW]->(body),
+                (a)-[:HAS_ATTRIBUTE]->(att:Asciidoc:Attribute)
+            WHERE
+                att.name='metric' AND toLower(att.value) = 'checkstyle'
+            WITH
+                body
+            MATCH
+                (body)-[:CONTAINS_CELL]->(prioCell:Asciidoc:Cell {colnumber: 0}),
+                (body)-[:CONTAINS_CELL]->(thresholdCell:Asciidoc:Cell {colnumber: 1})
+            SET
+                prioCell:Checkstyle:Priority:Metric,
+                thresholdCell:Checkstyle:Threshold:Metric,
+                prioCell.priority = prioCell.text,
+                thresholdCell.threshold = toInt(thresholdCell.text)
+            CREATE UNIQUE
+                (prioCell)-[:HAS_UPPER_THRESHOLD]->(thresholdCell)
+            RETURN
+                prioCell, thresholdCell
+        ]]></cypher>
+    </concept>
+
+    <concept id="jccc.asciidoc:SpotBugs" severity="info">
+        <description>Enrich Asciidoc cells for SpotBugs constraints.</description>
+        <cypher><![CDATA[
+            MATCH
+                (a:Asciidoc:Table)-[:HAS_ROW]->(body),
+                (a)-[:HAS_ATTRIBUTE]->(att:Asciidoc:Attribute)
+            WHERE
+                att.name='metric' AND toLower(att.value) = 'spotbugs'
+            WITH
+                body
+            MATCH
+                (body)-[:CONTAINS_CELL]->(prioCell:Asciidoc:Cell {colnumber: 0}),
+                (body)-[:CONTAINS_CELL]->(thresholdCell:Asciidoc:Cell {colnumber: 1})
+            SET
+                prioCell:SpotBugs:Priority:Metric,
+                thresholdCell:SpotBugs:Threshold:Metric,
+                prioCell.priority = toInt(prioCell.text),
+                thresholdCell.threshold = toInt(thresholdCell.text)
+            CREATE UNIQUE
+                (prioCell)-[:HAS_UPPER_THRESHOLD]->(thresholdCell)
+            RETURN
+                prioCell, thresholdCell
+        ]]></cypher>
+    </concept>
+
 </jqa:jqassistant-rules>

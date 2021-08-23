@@ -1,0 +1,90 @@
+<jqa:jqassistant-rules xmlns:jqa="http://www.buschmais.com/jqassistant/core/rule/schema/v1.4">
+
+    <group id="jccc.metrics:Default">
+        <includeConcept refId="jccc.metrics:*"/>
+        <includeConstraint refId="jccc.metrics:*"/>
+    </group>
+
+    <constraint id="jccc.metrics:MaxPmdWarnings">
+        <requiresConcept refId="jccc.asciidoc:PMD" />
+        <description>There must be less than X warnings reported by PMD.</description>
+        <cypher><![CDATA[
+            MATCH
+                (priority:Pmd:Priority:Metric)-[:HAS_UPPER_THRESHOLD]->(threshold)
+            WITH
+                priority, threshold
+            MATCH
+                (f:Pmd:File)-[:HAS_VIOLATION]->(v:Pmd:Violation)
+            WHERE
+                v.priority=priority.priority
+            WITH
+                collect(v) as vios, threshold
+            WITH
+            CASE
+                WHEN length(vios) > threshold.threshold
+                THEN vios
+            END AS out
+            UNWIND
+                out AS v
+            RETURN
+                v.package+"."+v.className+":"+v.beginLine as location, v.priority, v.message
+            ORDER BY
+                v.priority
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jccc.metrics:MaxCheckstyleWarnings">
+        <requiresConcept refId="jccc.asciidoc:Checkstyle" />
+        <description>There must be less than X warnings reported by Checkstyle.</description>
+        <cypher><![CDATA[
+            MATCH
+                (priority:Checkstyle:Priority:Metric)-[:HAS_UPPER_THRESHOLD]->(threshold)
+            WITH
+                priority, threshold
+            MATCH
+                (n:Checkstyle:Error)<-[:CHECKSTYLE_ERROR]-(f:Checkstyle:File)
+            WHERE
+                n.severity=priority.priority
+            WITH
+                collect({message: n.message, name: f.name, line: n.line, severity: n.severity}) as vios, threshold
+            WITH
+            CASE
+                WHEN length(vios) > threshold.threshold
+                THEN vios
+            END AS out
+            UNWIND
+                out AS v
+            RETURN
+                v.message, v.name, v.line, v.severity
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jccc.metrics:MaxSpotBugsWarnings">
+        <requiresConcept refId="jccc.asciidoc:SpotBugs" />
+        <description>There must be less than X warnings reported by SpotBugs.</description>
+        <cypher><![CDATA[
+            MATCH
+                (priority:SpotBugs:Priority:Metric)-[:HAS_UPPER_THRESHOLD]->(threshold)
+            WITH
+                priority, threshold
+            MATCH
+                (c:FindBugs:BugInstance)-[:HAS_SOURCELINE]->(s:FindBugs:SourceLine)
+            WHERE
+                toInt(c.priority)=priority.priority
+            WITH
+                collect({fqn: s.fqn, start: s.start, priority: c.priority, category: c.category, type: c.type}) as vios, threshold
+            WITH
+            CASE
+                WHEN length(vios) > threshold.threshold
+                THEN vios
+            END AS out
+            UNWIND
+                out AS v
+            RETURN
+                v.fqn, v.start, v.priority, v.category, v.type
+            ORDER BY
+                v.priority, v.category, v.type
+        ]]></cypher>
+    </constraint>
+
+</jqa:jqassistant-rules>
