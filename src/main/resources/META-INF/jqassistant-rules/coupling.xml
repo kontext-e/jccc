@@ -5,7 +5,7 @@
         <includeConcept refId="jccc.coupling:UsedFromDifferentPackage"/>
     </group>
 
-    <concept id="jccc.coupling:TypeFanIn">
+    <concept id="jccc.coupling:TypeFanIn" severity="info">
         <description>Add a property 'fanIn' to a Type with the number of other types depending on them.</description>
         <cypher><![CDATA[
             MATCH
@@ -25,7 +25,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.coupling:TypeFanOut">
+    <concept id="jccc.coupling:TypeFanOut" severity="info">
         <description>Add a property 'fanOut' to a Type with the number of other types they depend on.</description>
         <cypher><![CDATA[
             MATCH
@@ -45,7 +45,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.coupling:TypeCoupling">
+    <concept id="jccc.coupling:TypeCoupling" severity="info">
         <requiresConcept refId="jccc.coupling:TypeFanIn" />
         <requiresConcept refId="jccc.coupling:TypeFanOut" />
         <description>Add a property 'typeCoupling' to a Type as sum of fanIn and fanOut.</description>
@@ -62,7 +62,7 @@
     </concept>
 
 
-    <concept id="jccc.coupling:UsedFromDifferentPackage">
+    <concept id="jccc.coupling:UsedFromDifferentPackage" severity="info">
         <requiresConcept refId="jccc.visibility:PublicMethods" />
         <description>Put a label ‘UsedFromDifferentPackage’ on methods which are called from a different package.</description>
         <cypher><![CDATA[

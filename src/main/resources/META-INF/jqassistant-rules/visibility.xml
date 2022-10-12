@@ -11,7 +11,7 @@
         <includeConcept refId="jccc.visibility:PackageProtectedTypes"/>
     </group>
 
-    <concept id="jccc.visibility:PublicMethods">
+    <concept id="jccc.visibility:PublicMethods" severity="info">
         <description>Marks all public methods with label Public</description>
         <cypher><![CDATA[
             MATCH
@@ -25,7 +25,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:ProtectedMethods">
+    <concept id="jccc.visibility:ProtectedMethods" severity="info">
         <description>Marks all protected methods with label Protected</description>
         <cypher><![CDATA[
             MATCH
@@ -39,7 +39,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:PrivateMethods">
+    <concept id="jccc.visibility:PrivateMethods" severity="info">
         <description>Marks all private methods with label Private</description>
         <cypher><![CDATA[
             MATCH
@@ -53,7 +53,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:PackageProtectedMethods">
+    <concept id="jccc.visibility:PackageProtectedMethods" severity="info">
         <description>Marks all package protected methods with label PackageProtected</description>
         <cypher><![CDATA[
             MATCH
@@ -67,7 +67,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:PublicTypes">
+    <concept id="jccc.visibility:PublicTypes" severity="info">
         <description>Marks all public types with label Public</description>
         <cypher><![CDATA[
             MATCH
@@ -81,7 +81,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:PackageProtectedTypes">
+    <concept id="jccc.visibility:PackageProtectedTypes" severity="info">
         <description>Marks all package protected types with label PackageProtected</description>
         <cypher><![CDATA[
             MATCH
@@ -95,7 +95,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:ProtectedTypes">
+    <concept id="jccc.visibility:ProtectedTypes" severity="info">
         <description>Marks all protected types with label Protected</description>
         <cypher><![CDATA[
             MATCH
@@ -109,7 +109,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.visibility:PrivateTypes">
+    <concept id="jccc.visibility:PrivateTypes" severity="info">
         <description>Marks all private types with label Private</description>
         <cypher><![CDATA[
             MATCH

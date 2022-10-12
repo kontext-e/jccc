@@ -6,8 +6,9 @@
         <resource>main.xml</resource>
         <resource>package.xml</resource>
         <resource>components.xml</resource>
-        <resource>asciidoc.xml</resource>
+        <resource>jccc_asciidoc.xml</resource>
         <resource>jccc.xml</resource>
+        <resource>metrics.xml</resource>
     </rules>
 </jqa-plugin:jqassistant-plugin>
 

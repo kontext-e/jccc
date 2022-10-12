@@ -4,7 +4,7 @@
         <includeConcept refId="jccc.main:*"/>
     </group>
 
-    <concept id="jccc.main:MainTypes">
+    <concept id="jccc.main:MainTypes" severity="info">
         <description>Marks all types in main directories with label Main</description>
         <cypher><![CDATA[
             MATCH
@@ -18,7 +18,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.main:MainPackages">
+    <concept id="jccc.main:MainPackages" severity="info">
         <description>Marks all packages in main directories with label Main</description>
         <cypher><![CDATA[
             MATCH
@@ -32,7 +32,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.main:Immutable">
+    <concept id="jccc.main:Immutable" severity="info">
         <description>Labels all classes with an immutable state as "Immutable".</description>
         <cypher><![CDATA[
 			MATCH

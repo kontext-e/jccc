@@ -5,7 +5,7 @@
         <includeConstraint refId="jccc.components:*"/>
     </group>
 
-    <concept id="jccc.components:CreateArchitectureModelFromAsciidoc">
+    <concept id="jccc.components:CreateArchitectureModelFromAsciidoc" severity="info">
         <description>Create Architecture Model from Asciidoc.</description>
         <cypher><![CDATA[
             MATCH
@@ -29,7 +29,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.components:linkComponentToCode">
+    <concept id="jccc.components:linkComponentToCode" severity="info">
         <requiresConcept refId="jccc.components:CreateArchitectureModelFromAsciidoc" />
         <description>Create relationships between documented components and Java Packages in code.</description>
         <cypher><![CDATA[
@@ -44,7 +44,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.components:linkTablesToDiagram">
+    <concept id="jccc.components:linkTablesToDiagram" severity="info">
         <description>Create relationships between Asciidoc tables and UML diagrams.</description>
         <cypher><![CDATA[
             MATCH
@@ -64,7 +64,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.components:linkTableRowsToDiagramComponents">
+    <concept id="jccc.components:linkTableRowsToDiagramComponents" severity="info">
         <requiresConcept refId="jccc.components:linkTablesToDiagram" />
         <description>Create relationships between diagram components and describing tables rows.</description>
         <cypher><![CDATA[
@@ -82,7 +82,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.components:linkComponentToDiagrams">
+    <concept id="jccc.components:linkComponentToDiagrams" severity="info">
         <requiresConcept refId="jccc.components:CreateArchitectureModelFromAsciidoc" />
         <requiresConcept refId="jccc.components:linkTableRowsToDiagramComponents" />
         <description>Create relationships between C4 components and components described in diagrams.</description>
@@ -102,7 +102,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.components:connectC4Components">
+    <concept id="jccc.components:connectC4Components" severity="info">
         <requiresConcept refId="jccc.components:linkComponentToDiagrams" />
         <description>Create DEPENDS_ON relationships between C4 Component nodes.</description>
         <cypher><![CDATA[
@@ -117,7 +117,7 @@
         ]]></cypher>
     </concept>
 
-    <constraint id="jccc.components:checkDependencies">
+    <constraint id="jccc.components:checkDependencies" severity="info">
         <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromOtherToChild" />
         <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromChildToOther" />
         <requiresConcept refId="jccc.main:MainPackages" />
@@ -139,7 +139,7 @@
         ]]></cypher>
     </constraint>
 
-    <constraint id="jccc.components:missingDependencies">
+    <constraint id="jccc.components:missingDependencies" severity="info">
         <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromOtherToChild" />
         <requiresConcept refId="jccc.package:TransitivePackageDependenciesFromChildToOther" />
         <requiresConcept refId="jccc.main:MainPackages" />

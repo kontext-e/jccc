@@ -4,7 +4,7 @@
         <includeConcept refId="jccc.package:*"/>
     </group>
 
-    <concept id="jccc.package:PackageLevel">
+    <concept id="jccc.package:PackageLevel" severity="info">
         <requiresConcept refId="dependency:Package" />
         <description>Set the level property of a package, e.g. 1 for de, 2 for de.kontext_e and so on.</description>
         <cypher><![CDATA[
@@ -19,7 +19,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.package:TransitivePackageDependenciesFromOtherToChild">
+    <concept id="jccc.package:TransitivePackageDependenciesFromOtherToChild" severity="info">
         <requiresConcept refId="jccc.package:PackageLevel" />
         <description>Add a DEPENDS_ON relationship to parents of a package P from other packages up to the same level of the source package.</description>
         <cypher><![CDATA[
@@ -41,7 +41,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jccc.package:TransitivePackageDependenciesFromChildToOther">
+    <concept id="jccc.package:TransitivePackageDependenciesFromChildToOther" severity="info">
         <requiresConcept refId="jccc.package:PackageLevel" />
         <description>Add a DEPENDS_ON relationship to parents of a package P that depends on other package to the other package up to the same level of the source package.</description>
         <cypher><![CDATA[
